@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meine Playlist</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Meine Playlist</h1>
+
+    <!-- Suche -->
+    <form method="GET" action="/">
+      <input type="text" name="search" placeholder="Suche nach Titel, Künstler oder Genre" value="<%= searchQuery %>">
+      <button type="submit">Suchen</button>
+    </form>
+
+    <!-- Songs Tabelle -->
+    <table>
+      <thead>
+        <tr>
+          <th>Titel</th>
+          <th>Künstler</th>
+          <th>Genre</th>
+          <th>Dauer</th>
+          <th>Bewertung</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (songs.length === 0) { %>
+          <tr>
+            <td colspan="5">Keine Songs gefunden.</td>
+          </tr>
+        <% } else { %>
+          <% songs.forEach(song => { %>
+            <tr>
+              <td><%= song.Titel %></td>
+              <td><%= song.Künstler %></td>
+              <td><%= song.Genre %></td>
+              <td><%= Math.floor(song.Dauer / 60) %>:<%= String(song.Dauer % 60).padStart(2, '0') %></td>
+              <td><%= song.Bewertung %> / 5</td>
+            </tr>
+          <% }) %>
+        <% } %>
+      </tbody>
+    </table>
+
+    <!-- Pagination -->
+    <div class="pagination">
+      <% if (currentPage > 1) { %>
+        <a href="/?page=<%= currentPage - 1 %>&search=<%= searchQuery %>">&laquo; Zurück</a>
+      <% } %>
+      <span>Seite <%= currentPage %> von <%= pages %></span>
+      <% if (currentPage < pages) { %>
+        <a href="/?page=<%= currentPage + 1 %>&search=<%= searchQuery %>">Weiter &raquo;</a>
+      <% } %>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,19 +1,24 @@
-// initialize express framework
+// server.js
+
+// Express initialisieren
 const express = require("express");
 const app = express();
 
-// create http server
+// HTTP-Server erstellen
 const http = require("http").createServer(app);
 
-// set the view engine as EJS
+// EJS als View-Engine setzen
 app.set("view engine", "ejs");
 
-// include MongoDB module
+// Statische Dateien (CSS, JS, Bilder) bereitstellen
+app.use(express.static(__dirname + "/public"));
+
+// MongoDB Modul einbinden
 const { MongoClient } = require("mongodb");
 const url = "mongodb://localhost:27017";
 const client = new MongoClient(url);
 
-// globale Variable für die DB
+// Globale Variable für die DB
 let database;
 
 // Mit MongoDB verbinden
@@ -31,7 +36,7 @@ connectDB();
 // GET-Route für Songs mit Pagination + Suche
 app.get("/", async function (request, result) {
   try {
-    const perPage = parseInt(request.query.limit) || 5; // Anzahl Songs pro Seite (Standard = 5)
+    const perPage = parseInt(request.query.limit) || 5; // Songs pro Seite
     const pageNumber = parseInt(request.query.page) || 1;
     const searchQuery = request.query.search || "";
 
@@ -49,7 +54,7 @@ app.get("/", async function (request, result) {
     const songs = await database
       .collection("songs")
       .find(query, { projection: { Titel: 1, Künstler: 1, Genre: 1, Dauer: 1, Bewertung: 1 } })
-      .sort({ Titel: 1 }) // alphabetisch nach Titel sortieren
+      .sort({ Titel: 1 })
       .skip((pageNumber - 1) * perPage)
       .limit(perPage)
       .toArray();
@@ -66,7 +71,7 @@ app.get("/", async function (request, result) {
   }
 });
 
-// start server
+// Server starten, sobald die DB verbunden ist
 http.listen(3000, function () {
   console.log("Server gestartet auf Port 3000");
 });
